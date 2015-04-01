@@ -32,7 +32,7 @@ class InsertionOrder(Base):
         first = True
         rval = []
         ids = []
-        for raw_lineitem in csv.reader(utf_8_encoder(lineitems).split('\n')):
+        for raw_lineitem in csv.reader(lineitems.encode('utf-8').split('\n')):
             if len(raw_lineitem) == 0:
                 continue
 
@@ -52,8 +52,3 @@ class InsertionOrder(Base):
             rval.append(insertionOrder)
 
         return rval
-
-
-def utf_8_encoder(unicode_csv_data):
-    for line in unicode_csv_data:
-        yield line.encode('utf-8')
