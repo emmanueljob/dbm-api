@@ -1,0 +1,39 @@
+import os
+import requests
+import json
+import base64
+
+from oauth2client.client import SignedJwtAssertionCredentials
+import httplib2
+
+
+class Connection:
+
+    authorization_token = None
+
+    def __init__(self, username=None, password=None, url=None):
+        Connection.username = '342021153007-se0r0lv1a0sckq581ko2cnkre12cce9b@developer.gserviceaccount.com'
+        with open(os.path.dirname(os.path.realpath(__file__)) + "/" + "Accuen-DBM-9cf79343fc42.p12") as f:
+            Connection.password = f.read()
+
+    def connect(self):
+        Connection.get_authorization()
+
+    def get_authorization(self):
+        if Connection.authorization_token is None:
+            Connection.authorization_token = self.authorize()
+
+        return Connection.authorization_token
+
+    def authorize(self):
+        credentials = SignedJwtAssertionCredentials(Connection.username, Connection.password,
+                                                    'https://www.googleapis.com/auth/doubleclickbidmanager') # DBM
+
+        _API_VERSION = 'v1'
+
+        # Create an httplib2.Http object to handle our HTTP requests and authorize it
+        # with our good Credentials.
+        http = httplib2.Http()
+        Connection.authorization_token = credentials.authorize(http)
+
+        return Connection.authorization_token

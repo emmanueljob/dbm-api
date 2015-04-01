@@ -1,0 +1,42 @@
+import json
+
+from apiclient import discovery
+from oauth2client import client
+
+from dbmclient.models.base import Base
+
+
+class Advertiser(Base):
+
+    def find(self, id):
+        _API_VERSION = 'v1'
+        auth = Advertiser.connection.get_authorization()
+        service = discovery.build('doubleclickbidmanager', _API_VERSION, http=auth)
+
+        try:
+            body = { 'filterType': 'ADVERTISER_ID', 'filterIds': [id]}
+
+            req = service.lineitems().downloadlineitems(body=body)
+            resp = req.execute()
+
+        except client.AccessTokenRefreshError:
+            print ("The credentials have been revoked or expired, please re-run"
+                   "the application to re-authorize")
+
+        if 'lineItems' not in resp:
+            print "NO DATA"
+            return None
+        
+        lineitems = resp['lineItems']
+        import csv
+        first = True
+        adv = Advertiser(Advertiser.connection)
+        for lineitem in csv.reader(lineitems.split('\n')):
+            if first:
+                first = False
+                continue
+            adv['id'] = id
+            adv['name'] = lineitem[3]
+            return adv
+
+        return None
