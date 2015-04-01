@@ -52,3 +52,8 @@ class InsertionOrder(Base):
             rval.append(insertionOrder)
 
         return rval
+
+
+def utf_8_encoder(unicode_csv_data):
+    for line in unicode_csv_data:
+        yield line.encode('utf-8')
