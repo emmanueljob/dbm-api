@@ -48,6 +48,7 @@ class InsertionOrder(Base):
             ids.append(id)
             insertionOrder['id'] = id
             insertionOrder['name'] = raw_lineitem[4]
+            insertionOrder['advertiser_name'] = raw_lineitem[3]
             rval.append(insertionOrder)
 
         return rval

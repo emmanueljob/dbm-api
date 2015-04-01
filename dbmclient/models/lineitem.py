@@ -44,6 +44,12 @@ class Lineitem(Base):
             ids.append(id)
             lineitem['id'] = raw_lineitem[0]
             lineitem['name'] = raw_lineitem[5]
+            lineitem['active'] = raw_lineitem[5]
+            lineitem['budget'] = raw_lineitem[18]
+            lineitem['start_date'] = raw_lineitem[15]
+            lineitem['end_date'] = raw_lineitem[16]
+            lineitem['status'] = raw_lineitem[7]
+            lineitem['campaign_name'] = raw_lineitem[4]
             rval.append(lineitem)
 
         return rval

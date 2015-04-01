@@ -13,5 +13,10 @@ setup(
     long_description=open('README.txt').read(),
     install_requires=[
         "requests",
+        "google-api-python-client",
+        "httplib2",
+        "oauth2client",
+        "pyOpenSSL",
+        "cryptography",
     ],
 )
