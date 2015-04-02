@@ -50,6 +50,7 @@ class Lineitem(Base):
             lineitem['end_date'] = raw_lineitem[16]
             lineitem['status'] = raw_lineitem[7]
             lineitem['campaign_name'] = raw_lineitem[4]
+            lineitem['campaign_id'] = self.encode_for_id(raw_lineitem[4])
             rval.append(lineitem)
 
         return rval
