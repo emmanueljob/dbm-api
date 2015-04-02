@@ -1,6 +1,5 @@
 import csv
 import json
-import base64
 
 from apiclient import discovery
 from oauth2client import client
@@ -41,9 +40,7 @@ class InsertionOrder(Base):
                 continue
             
             insertionOrder = InsertionOrder(InsertionOrder.connection)
-            # TERRIBLE!!!!! BUT GOOGLE DOESNT SEND US AN ID.
-            # remove '=' because it messes up urls. we never decode so its not a big deal.
-            id = base64.b64encode(raw_lineitem[4]).strip('=')
+            id = self.encode_for_id(raw_lineitem[4])
             if id in ids:
                 continue
             ids.append(id)
