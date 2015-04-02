@@ -32,7 +32,7 @@ class InsertionOrder(Base):
         first = True
         rval = []
         ids = []
-        for raw_lineitem in csv.reader(lineitems.encode('utf-8').split('\n')):
+        for raw_lineitem in csv.reader(lineitems.split('\n').encode('utf-8')):
             if len(raw_lineitem) == 0:
                 continue
 
@@ -42,7 +42,8 @@ class InsertionOrder(Base):
             
             insertionOrder = InsertionOrder(InsertionOrder.connection)
             # TERRIBLE!!!!! BUT GOOGLE DOESNT SEND US AN ID.
-            id = base64.b64encode(raw_lineitem[4])
+            # remove '=' because it messes up urls. we never decode so its not a big deal.
+            id = base64.b64encode(raw_lineitem[4]).strip('=')
             if id in ids:
                 continue
             ids.append(id)
