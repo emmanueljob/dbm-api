@@ -32,7 +32,7 @@ class Lineitem(Base):
         first = True
         rval = []
         ids = []
-        for raw_lineitem in csv.reader(lineitems.split('\n').encode('utf-8')):
+        for raw_lineitem in csv.reader(lineitems.encode('utf-8').split('\n')):
             if len(raw_lineitem) == 0:
                 continue
 
