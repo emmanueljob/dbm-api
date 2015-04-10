@@ -2,7 +2,6 @@ import csv
 import json
 import base64
 
-from apiclient import discovery
 from oauth2client import client
 
 from dbmclient.models.base import Base
@@ -11,9 +10,7 @@ from dbmclient.models.base import Base
 class Lineitem(Base):
 
     def find_by_advertiser(self, advertiser_id):
-        _API_VERSION = 'v1'
-        auth = Lineitem.connection.get_authorization()
-        service = discovery.build('doubleclickbidmanager', _API_VERSION, http=auth)
+        service = self.get_service()
 
         try:
             body = { 'filterType': 'ADVERTISER_ID', 'filterIds': [advertiser_id]}

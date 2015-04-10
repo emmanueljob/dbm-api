@@ -1,6 +1,5 @@
 import json
 
-from apiclient import discovery
 from oauth2client import client
 
 from dbmclient.models.base import Base
@@ -9,10 +8,8 @@ from dbmclient.models.base import Base
 class Advertiser(Base):
 
     def find(self, id):
-        _API_VERSION = 'v1'
-        auth = Advertiser.connection.get_authorization()
-        service = discovery.build('doubleclickbidmanager', _API_VERSION, http=auth)
-
+        service = self.get_service()
+        
         try:
             body = { 'filterType': 'ADVERTISER_ID', 'filterIds': [id]}
 
