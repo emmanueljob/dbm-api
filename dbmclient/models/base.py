@@ -21,7 +21,7 @@ class Base(dict):
     def encode_for_id(self, id):
         # TERRIBLE!!!!! BUT GOOGLE DOESNT SEND US AN ID.
         # remove '=' because it messes up urls. we never decode so its not a big deal.
-        return base64.b64encode(id).strip('=')
+        return base64.b64encode(id.encode('utf-8')).strip('=')
 
     def decode_id(self, id):
         # TERRIBLE!!!!! BUT GOOGLE DOESNT SEND US AN ID.
@@ -30,7 +30,7 @@ class Base(dict):
         missing_padding = 4 - len(id) % 4
         if missing_padding:
             id += b'='* missing_padding
-        return base64.b64decode(id)
+        return base64.b64decode(id.decode('utf-8'))
 
     def get_object(self, data):
         new_obj = self.__class__(Base.connection)
