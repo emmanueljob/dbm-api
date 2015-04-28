@@ -21,7 +21,12 @@ class Base(dict):
     def encode_for_id(self, id):
         # TERRIBLE!!!!! BUT GOOGLE DOESNT SEND US AN ID.
         # remove '=' because it messes up urls. we never decode so its not a big deal.
-        return base64.b64encode(id.encode('utf-8')).strip('=')
+        try:
+            id = id.encode('utf-8')
+        except Exception:
+            # can't encode
+            pass
+        return base64.b64encode(id).strip('=')
 
     def decode_id(self, id):
         # TERRIBLE!!!!! BUT GOOGLE DOESNT SEND US AN ID.
