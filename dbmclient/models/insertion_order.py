@@ -35,7 +35,7 @@ class InsertionOrder(Base):
             if first:
                 first = False
                 continue
-            
+
             insertionOrder = InsertionOrder(InsertionOrder.connection)
             id = self.encode_for_id(raw_lineitem[4])
             if id in ids:
@@ -44,6 +44,9 @@ class InsertionOrder(Base):
             insertionOrder['id'] = id
             insertionOrder['name'] = raw_lineitem[4]
             insertionOrder['advertiser_name'] = raw_lineitem[3]
+            insertionOrder['budget'] = raw_lineitem[11]
+            insertionOrder['start_date'] = raw_lineitem[8]
+            insertionOrder['end_date'] = raw_lineitem[9]
             rval.append(insertionOrder)
 
         return rval
