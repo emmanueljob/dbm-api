@@ -29,6 +29,20 @@ class Query(Base):
 
         return rval
 
+    def find(self, query_id):
+        service = self.get_service()
+
+        try:
+            req = service.queries().getquery(queryId=query_id)
+            resp = req.execute()
+
+        except client.AccessTokenRefreshError:
+            print ("The credentials have been revoked or expired, please re-run"
+                   "the application to re-authorize")
+
+        
+        return self.get_object(resp)
+
     def create(self, query):
         service = self.get_service()
 
