@@ -68,12 +68,18 @@ class Lineitem(Base):
             self['inventory_targeting_exclude'] = raw_lineitem[52]
             self['daypart_targeting'] = raw_lineitem[53]
             self['env_targeting'] = raw_lineitem[54]
-        
+
     def find_by_advertiser(self, advertiser_id):
+        return self.find_by_object(advertiser_id, 'ADVERTISER_ID')
+
+    def find_by_campaign(self, campaign_id):
+        return self.find_by_object(campaign_id, 'IO_ID')
+
+    def find_by_object(self, object_id, filter_type):
         service = self.get_service()
 
         try:
-            body = { 'filterType': 'ADVERTISER_ID', 'filterIds': [advertiser_id], "fileSpec": "SDF"}
+            body = { 'filterType': filter_type, 'filterIds': [object_id], "fileSpec": "SDF"}
 
             req = service.lineitems().downloadlineitems(body=body)
             resp = req.execute()
