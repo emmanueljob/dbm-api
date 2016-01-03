@@ -9,11 +9,71 @@ from dbmclient.models.base import Base
 
 class Lineitem(Base):
 
+    def __init__(self, connection, raw_lineitem=None):
+        super(Lineitem, self).__init__(connection)
+
+        if raw_lineitem:
+            self['id'] = raw_lineitem[0]
+            self['io_id'] = raw_lineitem[1]
+            self['type'] = raw_lineitem[2]
+            self['name'] = raw_lineitem[3]
+            self['timestamp'] = raw_lineitem[4]
+            self['status'] = raw_lineitem[5]
+            self['start_date'] = raw_lineitem[6]
+            self['end_date'] = raw_lineitem[7]
+            self['budget_type'] = raw_lineitem[8]
+            self['budget'] = raw_lineitem[9]
+            self['pacing'] = raw_lineitem[10]
+            self['pacing_rate'] = raw_lineitem[11]
+            self['pacing_amount'] = raw_lineitem[12]
+            self['frequency_enabled'] = raw_lineitem[13]
+            self['frequency_exposures'] = raw_lineitem[14]
+            self['frequency_period'] = raw_lineitem[15]
+            self['frequency_amount'] = raw_lineitem[16]
+            self['partner_revenue_model'] = raw_lineitem[17]
+            self['partner_revenue_amount'] = raw_lineitem[18]
+            self['conversion_counting_type'] = raw_lineitem[19]
+            self['conversion_counting_pct'] = raw_lineitem[20]
+            self['conversion_pixel_ids'] = raw_lineitem[21]
+            self['fees'] = raw_lineitem[22]
+            self['integration_code'] = raw_lineitem[23]
+            self['details'] = raw_lineitem[24]
+            self['bid_strategy_value'] = raw_lineitem[25]
+            self['bid_strategy_unit'] = raw_lineitem[26]
+            self['creative_assignments'] = raw_lineitem[27]
+            self['geo_targeting_include'] = raw_lineitem[28]
+            self['geo_targeting_exclude'] = raw_lineitem[29]
+            self['lang_targeting_include'] = raw_lineitem[30]
+            self['lang_targeting_exclude'] = raw_lineitem[31]
+            self['device_targeting_include'] = raw_lineitem[32]
+            self['device_targeting_exclude'] = raw_lineitem[33]
+            self['browser_targeting_include'] = raw_lineitem[34]
+            self['browser_targeting_exclude'] = raw_lineitem[35]
+            self['brand_safety_sensitivity'] = raw_lineitem[36]
+            self['brand_safety_custom'] = raw_lineitem[37]
+            self['channel_targeting_include'] = raw_lineitem[38]
+            self['channel_targeting_exclude'] = raw_lineitem[39]
+            self['site_targeting_include'] = raw_lineitem[40]
+            self['site_targeting_exclude'] = raw_lineitem[41]
+            self['app_targeting_include'] = raw_lineitem[42]
+            self['app_targeting_exclude'] = raw_lineitem[43]
+            self['cat_targeting_include'] = raw_lineitem[44]
+            self['cat_targeting_exclude'] = raw_lineitem[45]
+            self['keyword_targeting_include'] = raw_lineitem[46]
+            self['keyword_targeting_exclude'] = raw_lineitem[47]
+            self['audience_targeting_similar'] = raw_lineitem[48]
+            self['audience_targeting_include'] = raw_lineitem[49]
+            self['audience_targeting_exclude'] = raw_lineitem[50]
+            self['inventory_targeting_include'] = raw_lineitem[51]
+            self['inventory_targeting_exclude'] = raw_lineitem[52]
+            self['daypart_targeting'] = raw_lineitem[53]
+            self['env_targeting'] = raw_lineitem[54]
+        
     def find_by_advertiser(self, advertiser_id):
         service = self.get_service()
 
         try:
-            body = { 'filterType': 'ADVERTISER_ID', 'filterIds': [advertiser_id]}
+            body = { 'filterType': 'ADVERTISER_ID', 'filterIds': [advertiser_id], "fileSpec": "SDF"}
 
             req = service.lineitems().downloadlineitems(body=body)
             resp = req.execute()
@@ -28,7 +88,6 @@ class Lineitem(Base):
         lineitems = resp['lineItems']
         first = True
         rval = []
-        ids = []
         for raw_lineitem in csv.reader(lineitems.encode('utf-8').split('\n')):
             if len(raw_lineitem) == 0:
                 continue
@@ -36,18 +95,91 @@ class Lineitem(Base):
             if first:
                 first = False
                 continue
-            
-            lineitem = Lineitem(Lineitem.connection)
-            ids.append(id)
-            lineitem['id'] = raw_lineitem[0]
-            lineitem['name'] = raw_lineitem[5]
-            lineitem['active'] = raw_lineitem[5]
-            lineitem['budget'] = raw_lineitem[18]
-            lineitem['start_date'] = raw_lineitem[15]
-            lineitem['end_date'] = raw_lineitem[16]
-            lineitem['status'] = raw_lineitem[7]
-            lineitem['campaign_name'] = raw_lineitem[4]
-            lineitem['campaign_id'] = self.encode_for_id(raw_lineitem[4])
+
+            lineitem = Lineitem(Lineitem.connection, raw_lineitem)
             rval.append(lineitem)
 
         return rval
+
+
+    @property
+    def id(self):
+        return self.get('id')
+
+    @id.setter
+    def id(self, id):
+        self.data['id'] = id
+
+    @property
+    def name(self):
+        return self.get('name')
+
+    @name.setter
+    def name(self, name):
+        self['name'] = name
+
+    @property
+    def active(self):
+        # return same as status for now.
+        return self.get('status') == "Active"
+
+    @property
+    def budget(self):
+        return self.get('budget')
+
+    @budget.setter
+    def budget(self, budget):
+        self['budget_type'] = 'amount'
+        self['budget'] = budget
+
+    @property
+    def start_date(self):
+        return self['start_date']
+
+    @start_date.setter
+    def start_date(self, start_date):
+        self['start_date'] = start_date
+
+    @property
+    def end_date(self):
+        return self.get('end_date')
+
+    @end_date.setter
+    def end_date(self, end_date):
+        self['end_date'] = end_date
+
+    @property
+    def status(self):
+        return self.get('status')
+
+    @status.setter
+    def status(self, status):
+        if status not in ["Active", "Paused", "Deleted"]:
+            return
+        self['status'] = status
+
+    @property
+    def campaign_id(self):
+        return self['io_id']
+
+    def save(self):
+        return
+        service = self.get_service()
+
+        header = "Line Item Id,Partner Name,Partner Id,Advertiser Name,Io Name,Line Item Name,Line Item Timestamp,Line Item Status,Io Start Date,Io End Date,Io Budget Type,Io Budget Amount,Io Pacing,Io Pacing Rate,Io Pacing Amount,Line Item Start Date,Line Item End Date,Line Item Budget Type,Line Item Budget Amount,Line Item Pacing,Line Item Pacing Rate,Line Item Pacing Amount,Line Item Frequency Enabled,Line Item Frequency Exposures,Line Item Frequency Period,Line Item Frequency Amount,Bid Price,Partner Revenue Model,Partner Revenue Amount,Current Audience Targeting Ids,Current Audience Targeting Names"
+        
+        lineitem = ",".join(self.raw_lineitem)
+
+        try:
+            
+            body = { 'lineItems': "{0}\n{1}".format(header, lineitem) }
+
+            req = service.lineitems().uploadlineitems(body=body)
+            resp = req.execute()
+
+            print resp
+
+        except client.AccessTokenRefreshError:
+            print ("The credentials have been revoked or expired, please re-run"
+                   "the application to re-authorize")
+
