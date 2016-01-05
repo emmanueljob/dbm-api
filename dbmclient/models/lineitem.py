@@ -78,6 +78,35 @@ class Lineitem(Base):
     def find_by_object(self, object_id, filter_type):
         service = self.get_service()
 
+        # because of shitty API's well make two calls very time so we can get an io name and io id
+        # IO NAME is needed for some historical backwards compatiblity.
+        try:
+            body = { 'filterType': filter_type, 'filterIds': [object_id]}
+
+            req = service.lineitems().downloadlineitems(body=body)
+            resp = req.execute()
+
+        except client.AccessTokenRefreshError:
+            print ("The credentials have been revoked or expired, please re-run"
+                   "the application to re-authorize")
+
+        if 'lineItems' not in resp:
+            return None
+        
+        lineitems = resp['lineItems']
+        first = True
+        rval = []
+        lineitem_to_ioname = {}
+        for raw_lineitem in csv.reader(lineitems.encode('utf-8').split('\n')):
+            if len(raw_lineitem) == 0:
+                continue
+
+            if first:
+                first = False
+                continue
+
+            lineitem_to_ioname[raw_lineitem[0]] = raw_lineitem[4]
+        
         try:
             body = { 'filterType': filter_type, 'filterIds': [object_id], "fileSpec": "SDF"}
 
@@ -103,6 +132,7 @@ class Lineitem(Base):
                 continue
 
             lineitem = Lineitem(Lineitem.connection, raw_lineitem)
+            lineitem['io_name'] = lineitem_to_ioname[lineitem.get('id')]
             rval.append(lineitem)
 
         return rval
@@ -166,7 +196,7 @@ class Lineitem(Base):
 
     @property
     def campaign_id(self):
-        return self['io_id']
+        return self.encode_for_id(self['io_name'])
 
     def save(self):
         return
