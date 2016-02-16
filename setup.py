@@ -15,7 +15,7 @@ setup(
         "requests",
         "google-api-python-client",
         "httplib2",
-        "oauth2client",
+        "oauth2client==1.4.7",
         "pyOpenSSL",
         "cryptography",
     ],
