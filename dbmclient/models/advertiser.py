@@ -1,3 +1,6 @@
+import csv
+import sys
+csv.field_size_limit(sys.maxsize)
 import json
 
 from oauth2client import client
@@ -25,7 +28,6 @@ class Advertiser(Base):
             return None
         
         lineitems = resp['lineItems']
-        import csv
         first = True
         adv = Advertiser(Advertiser.connection)
         for lineitem in csv.reader(lineitems.split('\n')):
