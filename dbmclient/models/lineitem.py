@@ -95,7 +95,6 @@ class Lineitem(Base):
 
         try:
             body = { 'filterType': filter_type, 'filterIds': [object_id]}
-            print body
             req = service.lineitems().downloadlineitems(body=body)
             resp = req.execute()
 
@@ -181,7 +180,7 @@ class Lineitem(Base):
 
     @property
     def campaign_id(self):
-        return self.encode_for_id(self['io_name'])
+        return self.encode_for_id(self['campaign_name'])
 
     def save(self):
         return
