@@ -16,62 +16,73 @@ class Lineitem(Base):
 
         if raw_lineitem:
             self['id'] = raw_lineitem[0]
-            self['io_id'] = raw_lineitem[1]
-            self['type'] = raw_lineitem[2]
-            self['name'] = raw_lineitem[3]
-            self['timestamp'] = raw_lineitem[4]
-            self['status'] = raw_lineitem[5]
-            self['start_date'] = raw_lineitem[6]
-            self['end_date'] = raw_lineitem[7]
-            self['budget_type'] = raw_lineitem[8]
-            self['budget'] = raw_lineitem[9]
-            self['pacing'] = raw_lineitem[10]
-            self['pacing_rate'] = raw_lineitem[11]
-            self['pacing_amount'] = raw_lineitem[12]
-            self['frequency_enabled'] = raw_lineitem[13]
-            self['frequency_exposures'] = raw_lineitem[14]
-            self['frequency_period'] = raw_lineitem[15]
-            self['frequency_amount'] = raw_lineitem[16]
-            self['partner_revenue_model'] = raw_lineitem[17]
-            self['partner_revenue_amount'] = raw_lineitem[18]
-            self['conversion_counting_type'] = raw_lineitem[19]
-            self['conversion_counting_pct'] = raw_lineitem[20]
-            self['conversion_pixel_ids'] = raw_lineitem[21]
-            self['fees'] = raw_lineitem[22]
-            self['integration_code'] = raw_lineitem[23]
-            self['details'] = raw_lineitem[24]
-            self['bid_strategy_type'] = raw_lineitem[25]
-            self['bid_strategy_value'] = raw_lineitem[26]
-            self['bid_strategy_unit'] = raw_lineitem[27]
-            self['creative_assignments'] = raw_lineitem[28]
-            self['geo_targeting_include'] = raw_lineitem[29]
-            self['geo_targeting_exclude'] = raw_lineitem[30]
-            self['lang_targeting_include'] = raw_lineitem[31]
-            self['lang_targeting_exclude'] = raw_lineitem[32]
-            self['device_targeting_include'] = raw_lineitem[33]
-            self['device_targeting_exclude'] = raw_lineitem[34]
-            self['browser_targeting_include'] = raw_lineitem[35]
-            self['browser_targeting_exclude'] = raw_lineitem[36]
-            self['brand_safety_labels'] = raw_lineitem[37]
-            self['brand_safety_sensitivity'] = raw_lineitem[38]
-            self['brand_safety_custom'] = raw_lineitem[39]
-            self['channel_targeting_include'] = raw_lineitem[40]
-            self['channel_targeting_exclude'] = raw_lineitem[41]
-            self['site_targeting_include'] = raw_lineitem[42]
-            self['site_targeting_exclude'] = raw_lineitem[43]
-            self['app_targeting_include'] = raw_lineitem[44]
-            self['app_targeting_exclude'] = raw_lineitem[45]
-            self['cat_targeting_include'] = raw_lineitem[46]
-            self['cat_targeting_exclude'] = raw_lineitem[47]
-            self['keyword_targeting_include'] = raw_lineitem[48]
-            self['keyword_targeting_exclude'] = raw_lineitem[49]
-            self['audience_targeting_similar'] = raw_lineitem[50]
-            self['audience_targeting_include'] = raw_lineitem[51]
-            self['audience_targeting_exclude'] = raw_lineitem[52]
-            self['inventory_targeting_include'] = raw_lineitem[53]
-            self['inventory_targeting_exclude'] = raw_lineitem[54]
-            self['daypart_targeting'] = raw_lineitem[55]
-            self['env_targeting'] = raw_lineitem[56]
+            self['name'] = raw_lineitem[5]
+            self['active'] = raw_lineitem[5]
+            self['budget'] = raw_lineitem[18]
+            self['start_date'] = raw_lineitem[15]
+            self['end_date'] = raw_lineitem[16]
+            self['status'] = raw_lineitem[7]
+            self['campaign_name'] = raw_lineitem[4]
+            self['campaign_id'] = self.encode_for_id(raw_lineitem[4])
+
+# EJJ: Mappings for SDF format. We would use this but the API fails sometimes when we use this format.
+#            self['id'] = raw_lineitem[0]
+#            self['io_id'] = raw_lineitem[1]
+#            self['type'] = raw_lineitem[2]
+#            self['name'] = raw_lineitem[3]
+#            self['timestamp'] = raw_lineitem[4]
+#            self['status'] = raw_lineitem[5]
+#            self['start_date'] = raw_lineitem[6]
+#            self['end_date'] = raw_lineitem[7]
+#            self['budget_type'] = raw_lineitem[8]
+#            self['budget'] = raw_lineitem[9]
+#            self['pacing'] = raw_lineitem[10]
+#            self['pacing_rate'] = raw_lineitem[11]
+#            self['pacing_amount'] = raw_lineitem[12]
+#            self['frequency_enabled'] = raw_lineitem[13]
+#            self['frequency_exposures'] = raw_lineitem[14]
+#            self['frequency_period'] = raw_lineitem[15]
+#            self['frequency_amount'] = raw_lineitem[16]
+#            self['partner_revenue_model'] = raw_lineitem[17]
+#            self['partner_revenue_amount'] = raw_lineitem[18]
+#            self['conversion_counting_type'] = raw_lineitem[19]
+#            self['conversion_counting_pct'] = raw_lineitem[20]
+#            self['conversion_pixel_ids'] = raw_lineitem[21]
+#            self['fees'] = raw_lineitem[22]
+#            self['integration_code'] = raw_lineitem[23]
+#            self['details'] = raw_lineitem[24]
+#            self['bid_strategy_type'] = raw_lineitem[25]
+#            self['bid_strategy_value'] = raw_lineitem[26]
+#            self['bid_strategy_unit'] = raw_lineitem[27]
+#            self['creative_assignments'] = raw_lineitem[28]
+#            self['geo_targeting_include'] = raw_lineitem[29]
+#            self['geo_targeting_exclude'] = raw_lineitem[30]
+#            self['lang_targeting_include'] = raw_lineitem[31]
+#            self['lang_targeting_exclude'] = raw_lineitem[32]
+#            self['device_targeting_include'] = raw_lineitem[33]
+#            self['device_targeting_exclude'] = raw_lineitem[34]
+#            self['browser_targeting_include'] = raw_lineitem[35]
+#            self['browser_targeting_exclude'] = raw_lineitem[36]
+#            self['brand_safety_labels'] = raw_lineitem[37]
+#            self['brand_safety_sensitivity'] = raw_lineitem[38]
+#            self['brand_safety_custom'] = raw_lineitem[39]
+#            self['channel_targeting_include'] = raw_lineitem[40]
+#            self['channel_targeting_exclude'] = raw_lineitem[41]
+#            self['site_targeting_include'] = raw_lineitem[42]
+#            self['site_targeting_exclude'] = raw_lineitem[43]
+#            self['app_targeting_include'] = raw_lineitem[44]
+#            self['app_targeting_exclude'] = raw_lineitem[45]
+#            self['cat_targeting_include'] = raw_lineitem[46]
+#            self['cat_targeting_exclude'] = raw_lineitem[47]
+#            self['keyword_targeting_include'] = raw_lineitem[48]
+#            self['keyword_targeting_exclude'] = raw_lineitem[49]
+#            self['audience_targeting_similar'] = raw_lineitem[50]
+#            self['audience_targeting_include'] = raw_lineitem[51]
+#            self['audience_targeting_exclude'] = raw_lineitem[52]
+#            self['inventory_targeting_include'] = raw_lineitem[53]
+#            self['inventory_targeting_exclude'] = raw_lineitem[54]
+#            self['daypart_targeting'] = raw_lineitem[55]
+#            self['env_targeting'] = raw_lineitem[56]
 
     def find_by_advertiser(self, advertiser_id):
         return self.find_by_object(advertiser_id, 'ADVERTISER_ID')
@@ -82,38 +93,9 @@ class Lineitem(Base):
     def find_by_object(self, object_id, filter_type):
         service = self.get_service()
 
-        # because of shitty API's well make two calls very time so we can get an io name and io id
-        # IO NAME is needed for some historical backwards compatiblity.
         try:
             body = { 'filterType': filter_type, 'filterIds': [object_id]}
-
-            req = service.lineitems().downloadlineitems(body=body)
-            resp = req.execute()
-
-        except client.AccessTokenRefreshError:
-            print ("The credentials have been revoked or expired, please re-run"
-                   "the application to re-authorize")
-
-        if 'lineItems' not in resp:
-            return None
-        
-        lineitems = resp['lineItems']
-        first = True
-        rval = []
-        lineitem_to_ioname = {}
-        for raw_lineitem in csv.reader(lineitems.encode('utf-8').split('\n')):
-            if len(raw_lineitem) == 0:
-                continue
-
-            if first:
-                first = False
-                continue
-
-            lineitem_to_ioname[raw_lineitem[0]] = raw_lineitem[4]
-        
-        try:
-            body = { 'filterType': filter_type, 'filterIds': [object_id], "fileSpec": "SDF"}
-
+            print body
             req = service.lineitems().downloadlineitems(body=body)
             resp = req.execute()
 
@@ -136,7 +118,6 @@ class Lineitem(Base):
                 continue
 
             lineitem = Lineitem(Lineitem.connection, raw_lineitem)
-            lineitem['io_name'] = lineitem_to_ioname[lineitem.get('id')]
             rval.append(lineitem)
 
         return rval
