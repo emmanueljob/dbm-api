@@ -3,8 +3,6 @@ import requests
 import json
 import base64
 
-# from oauth2client.client import SignedJwtAssertionCredentials
-
 from oauth2client.service_account import ServiceAccountCredentials
 import httplib2
 
@@ -17,8 +15,6 @@ class Connection:
 
     def __init__(self, username=None, password=None, url=None):
         Connection.username = '342021153007-se0r0lv1a0sckq581ko2cnkre12cce9b@developer.gserviceaccount.com'
-        # with open(os.path.dirname(os.path.realpath(__file__)) + "/" + "Accuen-DBM-9cf79343fc42.p12") as f:
-        #     Connection.password = f.read()
 
         with open(self.key_file) as f:
             Connection.password = f.read()
@@ -32,9 +28,7 @@ class Connection:
         return Connection.authorization_token
 
     def authorize(self):
-        # credentials = SignedJwtAssertionCredentials(Connection.username, Connection.password,
-        #                                             'https://www.googleapis.com/auth/doubleclickbidmanager') # DBM
-
+        
         credentials = ServiceAccountCredentials.from_p12_keyfile(Connection.username, self.key_file, scopes=['https://www.googleapis.com/auth/doubleclickbidmanager'])
 
         _API_VERSION = 'v1'
@@ -44,5 +38,4 @@ class Connection:
         http = httplib2.Http()
         Connection.authorization_token = credentials.authorize(http)
 
-        print 'AUTH TOKEN: ', Connection.authorization_token
         return Connection.authorization_token
