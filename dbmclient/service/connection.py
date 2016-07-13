@@ -11,7 +11,9 @@ class Connection:
 
     authorization_token = None
     # use Accuen DBM as the p12, NOT API Project!
-    key_file = os.path.dirname(os.path.realpath(__file__)) + "/Accuen-DBM-9cf79343fc42.p12"
+    # key_file = os.path.dirname(os.path.realpath(__file__)) + "/Accuen-DBM-9cf79343fc42.p12"
+
+    key_file = os.environ['P12FILEPATH']
 
     def __init__(self, username=None, password=None, url=None):
         Connection.username = '342021153007-se0r0lv1a0sckq581ko2cnkre12cce9b@developer.gserviceaccount.com'
@@ -28,7 +30,7 @@ class Connection:
         return Connection.authorization_token
 
     def authorize(self):
-        
+
         credentials = ServiceAccountCredentials.from_p12_keyfile(Connection.username, self.key_file, scopes=['https://www.googleapis.com/auth/doubleclickbidmanager'])
 
         _API_VERSION = 'v1'
@@ -37,5 +39,4 @@ class Connection:
         # with our good Credentials.
         http = httplib2.Http()
         Connection.authorization_token = credentials.authorize(http)
-
         return Connection.authorization_token
