@@ -22,7 +22,7 @@ class Connection:
                 self.key_file = p12
             else:
                 key_file = os.environ['P12FILEDBM']
-            
+
             with open(self.key_file) as f:
                 Connection.password = f.read()
         except:
