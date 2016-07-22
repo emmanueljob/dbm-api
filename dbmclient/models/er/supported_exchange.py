@@ -16,7 +16,7 @@ class SupportedExchange:
         self.secret = secret
 
     def _get_latest_file(self):
-        conn = boto.connect_gs()
+        conn = boto.connect_gs(self.access_key, self.secret)
         bucket = conn.get_bucket(SupportedExchange.GS_DBM_BUCKET)
         data = {}
         for key in bucket.list(SupportedExchange.GS_DBM_BUCKET_PREFIX):
