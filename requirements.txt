@@ -8,3 +8,5 @@ oauth2client==2.1.0
 pyOpenSSL==0.14
 cryptography==0.8.1
 pytest==2.9.2
+boto
+-e git+ssh://git@github.com/emmanueljob/gcs-oauth2-boto-plugin.git#egg=gcs-oauth2-boto-plugin
