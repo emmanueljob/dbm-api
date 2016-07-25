@@ -38,7 +38,7 @@ class Connection:
 
     def authorize(self):
 
-        credentials = ServiceAccountCredentials.from_p12_keyfile(Connection.username, self.key_file, scopes=['https://www.googleapis.com/auth/doubleclickbidmanager'])
+        credentials = ServiceAccountCredentials.from_p12_keyfile(Connection.username, self.key_file, scopes=['https://www.googleapis.com/auth/doubleclickbidmanager', 'https://www.googleapis.com/auth/cloud-platform'])
         _API_VERSION = 'v1'
 
         # Create an httplib2.Http object to handle our HTTP requests and authorize it

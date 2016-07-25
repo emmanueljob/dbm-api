@@ -1,9 +1,11 @@
 import json
 import re
-import boto
 import gcs_oauth2_boto_plugin
 import collections
+from StringIO import StringIO
 
+from apiclient import discovery
+from apiclient import http
 
 class SupportedExchange:
 
@@ -11,32 +13,53 @@ class SupportedExchange:
     GS_DBM_BUCKET_PREFIX = "entity/"
     GS_DBM_RPT_RE = GS_DBM_BUCKET_PREFIX + r"(?P<yyyy>\d{4})(?P<mm>\d\d)(?P<dd>\d\d)\.0\.SupportedExchange\.json"
 
-    def __init__(self, access_key=None, secret=None):
-        self.access_key = access_key
-        self.secret = secret
+    def __init__(self, connection):
+        SupportedExchange.connection = connection
+
+    def get_service(self):
+        auth = SupportedExchange.connection.get_authorization()
+        return discovery.build('storage', 'v1', http=auth)
 
     def _get_latest_file(self):
-        conn = boto.connect_gs(self.access_key, self.secret)
-        bucket = conn.get_bucket(SupportedExchange.GS_DBM_BUCKET)
+        service = self.get_service()
+
+        max_pages = 100
+
+        files = []
+        req = service.objects().list(bucket=SupportedExchange.GS_DBM_BUCKET, prefix=SupportedExchange.GS_DBM_BUCKET_PREFIX)
+        count = 0
+        while req is not None:
+            if count == max_pages:
+                print "more than max pages"
+                break
+            count += 1
+            resp = req.execute()
+            files.extend(resp.get('items', []))
+            req = service.objects().list_next(req, resp)
+
         data = {}
-        for key in bucket.list(SupportedExchange.GS_DBM_BUCKET_PREFIX):
+        for key in files:
             # Only sync files matching the known pattern.
-            match = re.match(SupportedExchange.GS_DBM_RPT_RE, key.name)
+            match = re.match(SupportedExchange.GS_DBM_RPT_RE, key['name'])
             if match:
-                data[key.name] = key
-        
+                data[key['name']] = key
+
         ordered = collections.OrderedDict(sorted(data.items()))
         latest_file = ordered.popitem()
-        
+
         return latest_file[1]
 
     def load_all(self):
         latest_file = self._get_latest_file()
-        data = latest_file.get_contents_as_string()
-        try:
-            json_data = json.loads(data)
-        except Exception, e:
-            print "Bad JSON Data",e
-            return None
+        service = self.get_service()
 
-        return json_data
+        req = service.objects().get_media(bucket=SupportedExchange.GS_DBM_BUCKET, object=latest_file['name'])
+        
+        out_file = StringIO()
+        downloader = http.MediaIoBaseDownload(out_file, req)
+        
+        done = False
+        while done is False:
+            status, done = downloader.next_chunk()
+
+        return out_file.getvalue()
