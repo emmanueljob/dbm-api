@@ -18,8 +18,7 @@ class SupportedExchangeTest(Base):
     def test_load_all(self):
         loader = SupportedExchange(SupportedExchangeTest.conn)
         data = loader.load_all()
-        json_data = json.loads(data)
-        assert json_data[0]['id'] == 1
+        assert data[0]['id'] == 1
         
 
 

@@ -61,4 +61,4 @@ class SupportedExchange:
         while done is False:
             status, done = downloader.next_chunk()
 
-        return out_file.getvalue()
+        return json.loads(out_file.getvalue())
