@@ -1,6 +1,5 @@
 import json
 import re
-import gcs_oauth2_boto_plugin
 import collections
 from StringIO import StringIO
 
