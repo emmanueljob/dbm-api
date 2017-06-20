@@ -40,16 +40,16 @@ class InsertionOrder(Base):
                 continue
 
             insertionOrder = InsertionOrder(InsertionOrder.connection)
-            id = self.encode_for_id(raw_lineitem[0])
+            id = self.encode_for_id(raw_io[0])
             if id in ids:
                 continue
 
             ids.append(id)
             insertionOrder['id'] = id
-            insertionOrder['name'] = raw_lineitem[1]
+            insertionOrder['name'] = raw_io[1]
             insertionOrder['advertiser_name'] = ''
 
-            budget_segments = raw_lineitem[20]
+            budget_segments = raw_io[20]
             budget_segments = budget_segments.replace('(', '')
             budget_segments = budget_segments.split(');')
 
