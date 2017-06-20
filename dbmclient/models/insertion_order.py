@@ -24,7 +24,7 @@ class InsertionOrder(Base):
             print ("The credentials have been revoked or expired, please re-run"
                    "the application to re-authorize")
 
-        if 'insertionOrders' not in resp:
+        if 'insertionOrders' not in response:
             return None
 
         ios = response['insertionOrders']
