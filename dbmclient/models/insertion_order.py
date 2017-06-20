@@ -61,10 +61,10 @@ class InsertionOrder(Base):
             insertionOrder['budget'] = budget
 
             start_date = budget_segments[0].split(';')
-            insertionOrder['start_date'] = start_date[1].lstrip())
+            insertionOrder['start_date'] = start_date[1].lstrip()
             
             end_date = budget_segments[(budget_segments - 1)].split(';')
-            insertionOrder['end_date'] = start_date[2].lstrip())
+            insertionOrder['end_date'] = start_date[2].lstrip()
             rval.append(insertionOrder)
 
         return rval
