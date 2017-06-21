@@ -31,7 +31,7 @@ class InsertionOrder(Base):
         first = True
         rval = []
         ids = []
-        for raw_io in csv.reader(ios.encode('utf-8').split('\n'), quoting=csv.QUOTE_NONNUMERIC):
+        for raw_io in csv.reader(ios.encode('utf-8').split('\n')):
             if len(raw_io) == 0:
                 continue
 
@@ -55,12 +55,13 @@ class InsertionOrder(Base):
 
             budget = 0.0
             for budget_segment in budget_segments:
-                segment = budget_segment.split(';')
-                #budget += int(segment[0].lstrip())
-                value = segment[0].strip('" ')
-                budget += float(value)
+                if budget_segment:
+                    segment = budget_segment.split(';')
+                    if segment[0] != '':
+                        value = segment[0].strip('" ').lstrip()
+                        budget += float(value)
 
-            insertionOrder['budget'] = int(budget)
+            insertionOrder['budget'] = float(budget)
 
             start_date = budget_segments[0].split(';')
             insertionOrder['start_date'] = start_date[1].lstrip()
