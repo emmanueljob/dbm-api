@@ -8,6 +8,9 @@ from dbmclient.models.base import Base
 
 class InsertionOrder(Base):
 
+    """
+    DBM's v3 SDF
+    """
     def find_by_advertiser(self, advertiser_id):
         service = self.get_service()
 
@@ -40,13 +43,14 @@ class InsertionOrder(Base):
                 continue
 
             insertionOrder = InsertionOrder(InsertionOrder.connection)
-            #id = self.encode_for_id(raw_io[0])
+            hash_id = self.encode_for_id(raw_io[0])
             id = raw_io[0]
             if id in ids:
                 continue
 
             ids.append(id)
             insertionOrder['id'] = id
+            insertionOrder['hash_id'] = hash_id
             insertionOrder['name'] = raw_io[1]
             insertionOrder['advertiser_name'] = ''
 
@@ -78,7 +82,10 @@ class InsertionOrder(Base):
 
         return rval
 
-    def find_by_advertiser_old(self, advertiser_id):
+    """
+    DBM's v2 SDF
+    """
+    def find_by_advertiser_v1(self, advertiser_id):
         service = self.get_service()
 
         try:
