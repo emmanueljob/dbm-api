@@ -43,7 +43,7 @@ class InsertionOrder(Base):
                 continue
 
             insertionOrder = InsertionOrder(InsertionOrder.connection)
-            hash_id = self.encode_for_id(raw_io[0])
+            hash_id = self.encode_for_id(raw_io[1])
             id = raw_io[0]
             if id in ids:
                 continue
