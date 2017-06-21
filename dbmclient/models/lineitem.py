@@ -236,7 +236,10 @@ class Lineitem(Base):
 
     @property
     def campaign_id(self):
-        return self.encode_for_id(self['campaign_name'])
+        # SDF v3
+        return self['campaign_id']
+        # SDF v2
+        #return self.encode_for_id(self['campaign_name'])
 
     def save(self):
         return
