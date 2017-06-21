@@ -50,24 +50,29 @@ class InsertionOrder(Base):
             insertionOrder['name'] = raw_io[1]
             insertionOrder['advertiser_name'] = ''
 
-            budget_segments = raw_io[20]
-            budget_segments = budget_segments.replace('(', '')
-            budget_segments = budget_segments.split('); ')
+            ugly_budget_segments = raw_io[20]
+            ugly_budget_segments = ugly_budget_segments.replace('(', '')
+            ugly_budget_segments = ugly_budget_segments.split(');')
+
+            budget_segments = []
+            for budget_segment in ugly_budget_segments:
+                if budget_segment:
+                    budget_segments.append(budget_segment)
 
             budget = 0.0
             for budget_segment in budget_segments:
                 if budget_segment:
-                    segment = budget_segment.split('; ')
+                    segment = budget_segment.split(';')
                     if segment[0] != '':
                         value = segment[0].strip('" ').lstrip()
                         budget += float(value)
 
             insertionOrder['budget'] = float(budget)
 
-            start_date = budget_segments[0].split('; ')
+            start_date = budget_segments[0].split(';')
             insertionOrder['start_date'] = start_date[1].lstrip()
 
-            end_date = budget_segments[(len(budget_segments) - 1)].split('; ')
+            end_date = budget_segments[(len(budget_segments) - 1)].split(';')
             insertionOrder['end_date'] = end_date[2].lstrip()
             rval.append(insertionOrder)
 
