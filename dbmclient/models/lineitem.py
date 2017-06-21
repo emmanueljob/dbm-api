@@ -15,6 +15,17 @@ class Lineitem(Base):
         super(Lineitem, self).__init__(connection)
 
         if raw_lineitem:
+            # Uses SDF v3
+            self['id'] = raw_lineitem[0]
+            self['campaign_id'] = raw_lineitem[1]
+            self['name'] = raw_lineitem[4]
+            self['status'] = raw_lineitem[6]
+            self['start_date'] = raw_lineitem[7]
+            self['end_date'] = raw_lineitem[8]
+            self['budget'] = raw_lineitem[10]
+
+            """
+            # Uses SDF v2
             self['id'] = raw_lineitem[0]
             self['name'] = raw_lineitem[5]
             self['active'] = raw_lineitem[5]
@@ -24,6 +35,7 @@ class Lineitem(Base):
             self['status'] = raw_lineitem[7]
             self['campaign_name'] = raw_lineitem[4]
             self['campaign_id'] = self.encode_for_id(raw_lineitem[4])
+            """
 
 # EJJ: Mappings for SDF format. We would use this but the API fails sometimes when we use this format.
 #            self['id'] = raw_lineitem[0]
@@ -87,10 +99,54 @@ class Lineitem(Base):
     def find_by_advertiser(self, advertiser_id):
         return self.find_by_object(advertiser_id, 'ADVERTISER_ID')
 
+    """
+    SDF v3
+    """
     def find_by_campaign(self, campaign_id):
-        return self.find_by_object(campaign_id, 'IO_ID')
+        return self.find_by_object(campaign_id, 'INSERTION_ORDER_ID')
 
     def find_by_object(self, object_id, filter_type):
+        service = self.get_service()
+
+        try:
+            request_body = {
+                'filterType': filter_type,
+                'filterIds': [object_id],
+                'fileTypes': ['LINE_ITEM']
+            }
+            request = service.sdf().download(body=request_body)
+            response = request.execute()
+
+        except client.AccessTokenRefreshError:
+            print ("The credentials have been revoked or expired, please re-run"
+                   "the application to re-authorize")
+
+        if 'lineItems' not in response:
+            return None
+
+        lineitems = response['lineItems']
+        first = True
+        rval = []
+        for raw_lineitem in csv.reader(lineitems.encode('utf-8').split('\n')):
+            if len(raw_lineitem) == 0:
+                continue
+
+            if first:
+                first = False
+                continue
+
+            lineitem = Lineitem(Lineitem.connection, raw_lineitem)
+            rval.append(lineitem)
+
+        return rval
+
+    """
+    SDF V2
+    """
+    def find_by_campaign_v1(self, campaign_id):
+        return self.find_by_object(campaign_id, 'IO_ID')
+
+    def find_by_object_v1(self, object_id, filter_type):
         service = self.get_service()
 
         try:
@@ -104,7 +160,7 @@ class Lineitem(Base):
 
         if 'lineItems' not in resp:
             return None
-        
+
         lineitems = resp['lineItems']
         first = True
         rval = []
