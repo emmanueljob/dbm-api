@@ -40,7 +40,8 @@ class InsertionOrder(Base):
                 continue
 
             insertionOrder = InsertionOrder(InsertionOrder.connection)
-            id = self.encode_for_id(raw_io[0])
+            #id = self.encode_for_id(raw_io[0])
+            id = raw_io[0]
             if id in ids:
                 continue
 
