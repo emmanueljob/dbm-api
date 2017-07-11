@@ -108,15 +108,23 @@ class Lineitem(Base):
     def find_by_object(self, object_id, filter_type):
         service = self.get_service()
 
+        print "DBM 1"
+        print service
+
         try:
             request_body = {
                 'filterType': filter_type,
                 'filterIds': [object_id],
-                'fileTypes': ['LINE_ITEM'],
-                "version": "3.1"
+                'fileTypes': ['LINE_ITEM']
             }
+            print "DBM 2"
+            print request_body
             request = service.sdf().download(body=request_body)
+            print "DBM 3"
+            print request
             response = request.execute()
+            print "DBM 4"
+            print response
 
         except client.AccessTokenRefreshError:
             print ("The credentials have been revoked or expired, please re-run"
@@ -126,6 +134,8 @@ class Lineitem(Base):
             return None
 
         lineitems = response['lineItems']
+        print "DBM 5"
+        print lineitems
         first = True
         rval = []
         for raw_lineitem in csv.reader(lineitems.encode('utf-8').split('\n')):
