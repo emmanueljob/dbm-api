@@ -112,7 +112,8 @@ class Lineitem(Base):
             request_body = {
                 'filterType': filter_type,
                 'filterIds': [object_id],
-                'fileTypes': ['LINE_ITEM']
+                'fileTypes': ['LINE_ITEM'],
+                "version": "3.1"
             }
             request = service.sdf().download(body=request_body)
             response = request.execute()
