@@ -31,9 +31,6 @@ class InsertionOrder(Base):
             return None
 
         ios = response['insertionOrders']
-        print "@#$#@$#@$#@$#@$#@"
-        print ios
-        print "@#$#@$#@$#@$#@$#@"
         first = True
         rval = []
         ids = []
