@@ -35,6 +35,7 @@ class InsertionOrder(Base):
         rval = []
         ids = []
         for raw_io in csv.reader(ios.encode('utf-8').split('\n')):
+            """
             if len(raw_io) == 0:
                 continue
 
@@ -47,6 +48,7 @@ class InsertionOrder(Base):
             id = raw_io[0]
             if id in ids:
                 continue
+            """
 
             ids.append(id)
             insertionOrder['id'] = id
