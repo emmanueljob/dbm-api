@@ -107,38 +107,47 @@ class Lineitem(Base):
 
     def find_by_object(self, object_id, filter_type):
         service = self.get_service()
+        request_body = {
+            'filterType': filter_type,
+            'filterIds': [object_id],
+            'fileTypes': ['LINE_ITEM']
+        }
 
         try:
-            request_body = {
-                'filterType': filter_type,
-                'filterIds': [object_id],
-                'fileTypes': ['LINE_ITEM']
-            }
             request = service.sdf().download(body=request_body)
             response = request.execute()
 
-        except client.AccessTokenRefreshError:
-            print ("The credentials have been revoked or expired, please re-run"
-                   "the application to re-authorize")
+            lineitems = response['lineItems']
+            first = True
+            lineitem_rval = []
+            for raw_lineitem in csv.reader(lineitems.encode('utf-8').split('\n')):
+                if len(raw_lineitem) == 0:
+                    continue
 
-        if 'lineItems' not in response:
-            return None
+                if first:
+                    first = False
+                    continue
 
-        lineitems = response['lineItems']
-        first = True
-        rval = []
-        for raw_lineitem in csv.reader(lineitems.encode('utf-8').split('\n')):
-            if len(raw_lineitem) == 0:
-                continue
+                lineitem = Lineitem(Lineitem.connection, raw_lineitem)
+                lineitem_rval.append(lineitem)
 
-            if first:
-                first = False
-                continue
+            rval = {}
+            rval["data"] = lineitem_rval
+            if len(lineitem_rval) > 0:
+                rval["msg_type"] = "success"
+                rval["msg"] = ""
+            else:
+                rval["msg_type"] = "error"
+                rval["msg"] = "No line item object was returned from the DSP"
 
-            lineitem = Lineitem(Lineitem.connection, raw_lineitem)
-            rval.append(lineitem)
+        except Exception, e:
+            rval = {}
+            rval["msg_type"] = "error"
+            rval["msg"] = "A fatal error has occurred. Please contact your administrator."
+            rval["data"] = str(e)
+            rval["request_body"] = request_body
 
-        return rval
+        return json.dumps(rval)
 
     """
     SDF V2
