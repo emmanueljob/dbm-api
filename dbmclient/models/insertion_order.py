@@ -51,10 +51,10 @@ class InsertionOrder(Base):
             ids.append(id)
             insertionOrder['id'] = id
             insertionOrder['hash_id'] = hash_id
-            insertionOrder['name'] = raw_io[1]
+            insertionOrder['name'] = raw_io[2]
             insertionOrder['advertiser_name'] = ''
 
-            ugly_budget_segments = raw_io[20]
+            ugly_budget_segments = raw_io[21]
             ugly_budget_segments = ugly_budget_segments.replace('(', '')
             ugly_budget_segments = ugly_budget_segments.split(');')
 
