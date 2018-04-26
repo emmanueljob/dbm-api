@@ -13,74 +13,83 @@ class InsertionOrder(Base):
     """
     def find_by_advertiser(self, advertiser_id):
         service = self.get_service()
+        request_body = {
+            'filterType': 'ADVERTISER_ID',
+            'filterIds': [advertiser_id],
+            'fileTypes': ['INSERTION_ORDER']
+        }
 
         try:
-            request_body = {
-                'filterType': 'ADVERTISER_ID',
-                'filterIds': [advertiser_id],
-                'fileTypes': ['INSERTION_ORDER']
-            }
             request = service.sdf().download(body=request_body)
             response = request.execute()
 
-        except client.AccessTokenRefreshError:
-            print ("The credentials have been revoked or expired, please re-run"
-                   "the application to re-authorize")
+            ios = response['insertionOrders']
+            first = True
+            io_rval = []
+            ids = []
+            for raw_io in csv.reader(ios.encode('utf-8').split('\n')):
+                if len(raw_io) == 0:
+                    continue
 
-        if 'insertionOrders' not in response:
-            return None
+                if first:
+                    first = False
+                    continue
 
-        ios = response['insertionOrders']
-        first = True
-        rval = []
-        ids = []
-        for raw_io in csv.reader(ios.encode('utf-8').split('\n')):
-            if len(raw_io) == 0:
-                continue
+                insertionOrder = InsertionOrder(InsertionOrder.connection)
+                hash_id = self.encode_for_id(raw_io[1])
+                id = raw_io[0]
+                if id in ids:
+                    continue
 
-            if first:
-                first = False
-                continue
+                ids.append(id)
+                insertionOrder['id'] = id
+                insertionOrder['hash_id'] = hash_id
+                insertionOrder['name'] = raw_io[2]
+                insertionOrder['advertiser_name'] = ''
 
-            insertionOrder = InsertionOrder(InsertionOrder.connection)
-            hash_id = self.encode_for_id(raw_io[1])
-            id = raw_io[0]
-            if id in ids:
-                continue
+                ugly_budget_segments = raw_io[21]
+                ugly_budget_segments = ugly_budget_segments.replace('(', '')
+                ugly_budget_segments = ugly_budget_segments.split(');')
 
-            ids.append(id)
-            insertionOrder['id'] = id
-            insertionOrder['hash_id'] = hash_id
-            insertionOrder['name'] = raw_io[2]
-            insertionOrder['advertiser_name'] = ''
+                budget_segments = []
+                for budget_segment in ugly_budget_segments:
+                    if budget_segment:
+                        budget_segments.append(budget_segment)
 
-            ugly_budget_segments = raw_io[21]
-            ugly_budget_segments = ugly_budget_segments.replace('(', '')
-            ugly_budget_segments = ugly_budget_segments.split(');')
+                budget = 0.0
+                for budget_segment in budget_segments:
+                    if budget_segment:
+                        segment = budget_segment.split(';')
+                        if segment[0] != '':
+                            value = segment[0].strip('" ').lstrip()
+                            budget += float(value)
 
-            budget_segments = []
-            for budget_segment in ugly_budget_segments:
-                if budget_segment:
-                    budget_segments.append(budget_segment)
+                insertionOrder['budget'] = float(budget)
 
-            budget = 0.0
-            for budget_segment in budget_segments:
-                if budget_segment:
-                    segment = budget_segment.split(';')
-                    if segment[0] != '':
-                        value = segment[0].strip('" ').lstrip()
-                        budget += float(value)
+                start_date = budget_segments[0].split(';')
+                insertionOrder['start_date'] = start_date[1].lstrip()
 
-            insertionOrder['budget'] = float(budget)
+                end_date = budget_segments[(len(budget_segments) - 1)].split(';')
+                insertionOrder['end_date'] = end_date[2].lstrip()
+                io_rval.append(insertionOrder)
 
-            start_date = budget_segments[0].split(';')
-            insertionOrder['start_date'] = start_date[1].lstrip()
+            rval = {}
+            rval["data"] = io_rval
+            if len(io_rval) > 0:
+                rval["msg_type"] = "success"
+                rval["msg"] = ""
+            else:
+                rval["msg_type"] = "error"
+                rval["msg"] = "No campaign was returned from the DSP"
 
-            end_date = budget_segments[(len(budget_segments) - 1)].split(';')
-            insertionOrder['end_date'] = end_date[2].lstrip()
-            rval.append(insertionOrder)
+        except Exception, e:
+            rval = {}
+            rval["msg_type"] = "error"
+            rval["msg"] = "A fatal error has occurred. Please contact your administrator."
+            rval["data"] = str(e)
+            rval["request_body"] = request_body
 
-        return rval
+        return json.dumps(rval)
 
     """
     DBM's v2 SDF
